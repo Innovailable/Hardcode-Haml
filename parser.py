@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 ###############################################################################
 ##
 ##  hardcode_haml - Haml for hardcore coders
@@ -124,9 +123,9 @@ class XmlTag:
 
 class Parser:
 
-    def __init__(self, inp, out_name, readable=True):
+    def __init__(self, inp, out, readable=True):
         self.inp = inp
-        self.out = CppWriter(out_name, readable)
+        self.out = out
         self.readable = readable
 
     def write_indent(self):
@@ -260,11 +259,4 @@ class Parser:
         self.sync_stack(0)
 
         out.finish()
-
-def main(argv):
-    Parser(file(argv[0]), 'test', False).parse()
-
-if __name__ == '__main__':
-    import sys
-    main(sys.argv[1:])
 

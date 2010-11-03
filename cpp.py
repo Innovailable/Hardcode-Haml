@@ -18,10 +18,12 @@
 ##
 ###############################################################################
 
+from os.path import join
+
 class CppWriter:
 
-    def __init__(self, name, readable=True):
-        self.out = open("%s.cpp" % name, 'w')
+    def __init__(self, name, directory, readable=True):
+        self.out = open(join(directory, "%s.cpp" % name), 'w')
         self.write_buf = []
         self.name = name
         self.readable = readable

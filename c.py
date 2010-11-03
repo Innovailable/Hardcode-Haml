@@ -18,10 +18,12 @@
 ##
 ###############################################################################
 
+from os.path import join
+
 class CWriter:
 
-    def __init__(self, name, readable=True):
-        self.out = open("%s.c" % name, 'w')
+    def __init__(self, name, directory, readable=True):
+        self.out = open(join(directory, "%s.c" % name), 'w')
         self.write_buf = []
         self.name = name
         self.readable = readable
