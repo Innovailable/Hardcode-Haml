@@ -46,13 +46,13 @@ class PythonWriter:
 
     def write(self, data):
         # escape!
-        self.write_buf.append(repr(data))
+        self.write_buf.append(repr(data)[1:-1])
 
     def flush(self):
         if self.write_buf:
-            data = ' + '.join(self.write_buf)
+            data = ''.join(self.write_buf)
             self.write_buf = []
-            self.execute('out.write(%s)' % data)
+            self.execute("out.write('%s')" % data)
 
     def block_exec(self, cmd):
         self.execute(cmd)
