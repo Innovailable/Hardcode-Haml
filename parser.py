@@ -22,6 +22,7 @@
 import re
 
 from cpp import CppWriter
+from c import CWriter
 
 class ParserException(Exception):
 
@@ -123,12 +124,14 @@ class XmlTag:
 
 class Parser:
 
-    def __init__(self, inp, out_name):
+    def __init__(self, inp, out_name, readable=True):
         self.inp = inp
-        self.out = CppWriter(out_name)
+        self.out = CppWriter(out_name, readable)
+        self.readable = readable
 
     def write_indent(self):
-        self.out.write(" " * (self.indent * 2))
+        if self.readable:
+            self.out.write(" " * (self.indent * 2))
 
     def sync_stack(self, to):
         stack = self.stack
@@ -237,9 +240,11 @@ class Parser:
                 }
 
         for line, pre_indent in self.line_split(self.inp):
-            self.out.comment('Haml line %i' % self.line)
+            self.out.comment('syncing the stack')
 
             self.sync_stack(self.count_indent(line))
+
+            self.out.comment('Haml line %i' % self.line)
 
             content = line.strip()
 
@@ -249,7 +254,7 @@ class Parser:
             pop_val = action(content, pre_indent)
             stack.append(pop_val)
 
-        self.out.comment("End of Haml file")
+        self.out.comment("End of Haml file, clearing stack")
         
         # clear the stack
         self.sync_stack(0)
@@ -257,7 +262,7 @@ class Parser:
         out.finish()
 
 def main(argv):
-    Parser(file(argv[0]), 'test').parse()
+    Parser(file(argv[0]), 'test', False).parse()
 
 if __name__ == '__main__':
     import sys
