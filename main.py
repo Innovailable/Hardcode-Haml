@@ -23,12 +23,13 @@ from parser import Parser
 from optparse import OptionParser
 from os.path import split
 
-import c, cpp
+import c, cpp, python
 
 def main(argv):
     out_modules = {
             'cpp': cpp.CppWriter,
             'c': c.CWriter,
+            'python': python.PythonWriter
             }
 
     optp = OptionParser(usage="usage: %prog [options] file [...]")
