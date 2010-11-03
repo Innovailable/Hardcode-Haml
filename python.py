@@ -38,7 +38,7 @@ class PythonWriter:
         self.out.write("\nif __name__ == '__main__': import sys; %s(sys.stdout)\n" % self.name)
 
     def evaluate(self, cmd):
-        self.execute("out.write(%s)" % cmd)
+        self.execute("out.write(str(%s))" % cmd)
 
     def execute(self, cmd):
         self.flush()
@@ -55,7 +55,7 @@ class PythonWriter:
             self.execute("out.write('%s')" % data)
 
     def block_exec(self, cmd):
-        self.execute(cmd)
+        self.execute(cmd + ":")
         self.indent += 1
 
     def close_block(self):
