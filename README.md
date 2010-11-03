@@ -13,10 +13,10 @@ used template engines in script languages like Ruby, Python or Java Script makes
 returning to those template engines hard. This is where Hardcode Haml comes into
 play.
 
-Haml was first implemented in ruby and until now ported to multiple other
-languages. It compines the ability to replace parts of your markup with values
-calculated at runtime (even allowing evaluation of code directly from the
-markup) and additionally replaces XML with more writeable and readable markup.
+Haml was first implemented in ruby and got ported to multiple other languages.
+It compines the ability to replace parts of your markup with values calculated
+at runtime (even allowing evaluation of code directly from the markup) and
+additionally replaces XML with more writeable and readable markup.
 
 This project turns Haml markup into program code. Therefore the markup gets
 parsed and processed before runtime and maybe even optimized by your compiler.
@@ -31,10 +31,10 @@ which let you print out evaluated code and even pass code directly to the
 generated code. Loops and other control flow elements can be used to repeat
 blocks or conditionally display them.
 
-To fullfill the needs of the target languages Haml syntax has to be extended. We
-need a way to specify the name and type of the parameters given to the template.
-Additionally most languages need a way to execute code before the function
-declaration (e.g. to include headers).
+To fullfill the needs of the target languages, Haml syntax has to be extended.
+We need a way to specify the name and type of the parameters given to the
+template. Additionally most languages need a way to execute code before the
+function declaration (e.g. to include headers).
 
 ## Supported Languages
 

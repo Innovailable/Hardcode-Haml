@@ -193,7 +193,7 @@ class Parser:
             self.out.write("\n")
             return lambda: self.backshift_display("</%s>" % tag.name)
         else:
-            self.display(tag.content)
+            self.display(tag.content.strip())
             self.out.write("</%s>\n" % tag.name)
 
     def comment(self, line, pre_indent):
