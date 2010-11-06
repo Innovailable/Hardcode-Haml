@@ -43,7 +43,13 @@ class CWriter:
 
     def execute(self, cmd):
         self.flush()
-        self.out.write("\t" * self.indent + cmd + ";\n")
+
+        cmd = cmd.strip()
+
+        if cmd.startswith('#'):
+            self.out.write(cmd + "\n")
+        else:
+            self.out.write("\t" * self.indent + cmd + ";\n")
 
     def write(self, data):
         # escape!
