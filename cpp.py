@@ -22,11 +22,10 @@ from os.path import join
 
 class CppWriter:
 
-    def __init__(self, name, directory, readable=True):
+    def __init__(self, name, directory):
         self.out = open(join(directory, "%s.cpp" % name), 'w')
         self.write_buf = []
         self.name = name
-        self.readable = readable
 
     def start(self):
         self.out.write("#include <iostream>\n\n")
@@ -76,7 +75,6 @@ class CppWriter:
         self.out.write("\t" * self.indent + "}\n")
 
     def comment(self, data):
-        if self.readable:
-            self.flush()
-            self.out.write("\t" * self.indent + "// " + data + "\n")
+        self.flush()
+        self.out.write("\t" * self.indent + "// " + data + "\n")
 

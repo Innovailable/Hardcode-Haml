@@ -22,11 +22,10 @@ from os.path import join
 
 class PythonWriter:
 
-    def __init__(self, name, directory, readable=True):
+    def __init__(self, name, directory):
         self.out = open(join(directory, "%s.py" % name), 'w')
         self.write_buf = []
         self.name = name
-        self.readable = readable
 
     def start(self):
         self.out.write("def %s(out):\n" % self.name)
@@ -63,7 +62,6 @@ class PythonWriter:
         self.indent -= 1
 
     def comment(self, data):
-        if self.readable:
-            self.flush()
-            self.out.write("    " * self.indent + "# " + data + "\n")
+        self.flush()
+        self.out.write("    " * self.indent + "# " + data + "\n")
 

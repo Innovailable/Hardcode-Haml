@@ -48,7 +48,7 @@ def main(argv):
         for in_file in args:
             name = split(in_file)[1].split('.')[0]
 
-            writer = out_module(name, options.directory, options.readable)
+            writer = out_module(name, options.directory)
 
             Parser(file(in_file), writer, readable=options.readable).parse()
 

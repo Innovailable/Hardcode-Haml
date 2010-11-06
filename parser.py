@@ -223,6 +223,7 @@ class Parser:
 
     def parse(self):
         out = self.out
+        readable = self.readable
 
         out.start()
 
@@ -239,11 +240,13 @@ class Parser:
                 }
 
         for line, pre_indent in self.line_split(self.inp):
-            self.out.comment('syncing the stack')
+            if readable:
+                self.out.comment('syncing the stack')
 
             self.sync_stack(self.count_indent(line))
 
-            self.out.comment('Haml line %i' % self.line)
+            if readable:
+                self.out.comment('Haml line %i' % self.line)
 
             content = line.strip()
 
@@ -253,7 +256,8 @@ class Parser:
             pop_val = action(content, pre_indent)
             stack.append(pop_val)
 
-        self.out.comment("End of Haml file, clearing stack")
+        if readable:
+            self.out.comment("End of Haml file, clearing stack")
         
         # clear the stack
         self.sync_stack(0)

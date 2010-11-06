@@ -22,11 +22,10 @@ from os.path import join
 
 class CWriter:
 
-    def __init__(self, name, directory, readable=True):
+    def __init__(self, name, directory):
         self.out = open(join(directory, "%s.c" % name), 'w')
         self.write_buf = []
         self.name = name
-        self.readable = readable
 
     def start(self):
         self.out.write("#include <stdio.h>\n\n")
@@ -76,7 +75,6 @@ class CWriter:
         self.out.write("\t" * self.indent + "}\n")
 
     def comment(self, data):
-        if self.readable:
-            self.flush()
-            self.out.write("\t" * self.indent + "// " + data + "\n")
+        self.flush()
+        self.out.write("\t" * self.indent + "// " + data + "\n")
 
