@@ -37,8 +37,8 @@ def is_escaped(value, index):
     # uneven number of backslashs?
     return (index - cur - 1) % 2
 
-def find_unescaped(haystack, needle):
-    last = 0
+def find_unescaped(haystack, needle, start=0):
+    last = start
 
     while True:
         index = haystack.find(needle, last)
@@ -100,6 +100,39 @@ class XmlTag:
         else:
             return ""
 
+    def consume_value(self, stoppers):
+        data = self.data
+        index = 0
+
+        bracket_depth = 0
+
+        while True:
+            if data[index] in stoppers:
+                if bracket_depth == 0:
+                    break
+
+            if data[index] == '"':
+                index = find_unescaped(data, '"', index + 1) + 1
+            elif data[index] == "'":
+                index = find_unescaped(data, "'", index + 1) + 1
+            elif data[index] == '(':
+                bracket_depth += 1
+                index += 1
+            elif data[index] == ')':
+                bracket_depth -= 1
+                index += 1
+            else:
+                index += 1
+
+            if bracket_depth < 0:
+                raise ParserException("Unmatched closing bracket", self.line)
+
+            if not 0 <= index < len(data):
+                raise ParserException("Error parsing value", self.line)
+
+        self.data = data[index:]
+        return data[:index]
+
     def parse_name_part(self):
         return self.consume_regex('\w+')
 
@@ -111,45 +144,46 @@ class XmlTag:
             if type_c == '%':
                 self.name = self.parse_name_part()
             elif type_c == '#':
-                self.add_attr('id', '"%s"' % self.parse_name_part())
+                self.add_attr('"id"', '"%s"' % self.parse_name_part())
             elif type_c == '.':
-                self.add_attr('class', '"%s"' % self.parse_name_part())
+                self.add_attr('"class"', '"%s"' % self.parse_name_part())
             else:
                 raise ParserException("Couldn't parse tag name", self.line)
 
     def parse_attrs(self):
-        if self.data and self.data[0] == '(':
-            self.data = self.data[1:]
+        while self.data and self.data[0] in ['(', '{']:
+            if self.data and self.data[0] == '(':
+                self.data = self.data[1:]
 
-            while self.data[0] != ')':
-                self.consume_regex("\s*")
-                key = self.consume_regex("\w+")
-                self.consume_regex("\s*=\s*")
-                value = self.consume_regex("[^)\s]+")
+                while self.data[0] != ')':
+                    self.consume_regex("\s*")
+                    key = '"%s"' % self.consume_regex("\w+")
+                    self.consume_regex("\s*=\s*")
+                    value = self.consume_value([' ', ')'])
 
-                if value and key:
-                    self.add_attr(key, value)
-                else:
-                    raise ParserException("Failed to parse the attributes", self.line)
+                    if value and key:
+                        self.add_attr(key, value)
+                    else:
+                        raise ParserException("Failed to parse the attributes", self.line)
 
-            self.data = self.data[1:]
-        elif self.data and self.data[0] == '{':
-            self.data = self.data[1:]
+                self.data = self.data[1:]
 
-            while self.data[0] != '}':
-                self.consume_regex("\s*")
-                key = self.consume_regex("\w+")
-                self.consume_regex("\s*(?:=>)\s*")
-                value = self.consume_regex('[^,}]+')
-                self.consume_regex("\s*,?")
+            elif self.data and self.data[0] == '{':
+                self.data = self.data[1:]
 
-                if value and key:
-                    self.add_attr(key, value)
-                else:
-                    print self.data
-                    raise ParserException("Failed to parse the attribute", self.line)
+                while self.data[0] != '}':
+                    self.consume_regex("\s*")
+                    key = self.consume_value(['='])
+                    self.consume_regex("\s*=>\s*")
+                    value = self.consume_value([',', '}'])
+                    self.consume_regex("\s*,?")
 
-            self.data = self.data[1:]
+                    if value and key:
+                        self.add_attr(key, value)
+                    else:
+                        raise ParserException("Failed to parse the attribute", self.line)
+
+                self.data = self.data[1:]
 
     def parse_content(self):
         self.content = self.data
@@ -230,7 +264,9 @@ class Parser:
         self.out.write("<%s" % tag.name)
 
         for key, values in tag.attrs.iteritems():
-            self.out.write(' %s="' % key)
+            self.out.write(' ')
+            self.out.evaluate(key)
+            self.out.write('="')
             for index, value in enumerate(values):
                 if index > 0:
                     self.out.write(" ")
