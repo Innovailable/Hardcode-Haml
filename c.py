@@ -20,6 +20,8 @@
 
 from os.path import join
 
+import primitives
+
 class CWriter:
 
     def __init__(self, name, directory):
@@ -39,7 +41,12 @@ class CWriter:
         self.out.write("int main() { %s(stdout); return 0; }\n" % self.name)
 
     def evaluate(self, cmd):
-        self.execute("fputs(%s, out)" % cmd)
+        prim = primitives.find_primitive(cmd)
+
+        if prim:
+            self.write_buf.append(prim)
+        else:
+            self.execute("fputs(%s, out)" % cmd)
 
     def execute(self, cmd):
         self.flush()

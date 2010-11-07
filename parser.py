@@ -20,6 +20,42 @@
 
 import re
 
+def is_escaped(value, index):
+    cur = index - 1
+
+    if cur < 0:
+        return False
+
+    # loop while on a backshlash
+    while value[cur] == '\\':
+        cur -= 1
+
+        # the end is neigh, let's stop
+        if cur < 0:
+            break
+
+    # uneven number of backslashs?
+    return (index - cur - 1) % 2
+
+def find_unescaped(haystack, needle):
+    last = 0
+
+    while True:
+        index = haystack.find(needle, last)
+
+        # nothing found
+        if index == -1:
+            break
+
+        if is_escaped(haystack, index):
+            # the needle escaped, let's go on
+            last = index + 1
+        else:
+            # we found the needle
+            return index
+
+    return -1
+
 class ParserException(Exception):
 
     def __init__(self, msg, line=None):
