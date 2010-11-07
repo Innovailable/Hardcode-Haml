@@ -50,11 +50,16 @@ currently smaller than 100 lines (including whitespaces).
 Haml passes code directly to the underlying language, so the language modules
 won't be interchangable without replacing some code in your templates.
 
+## Hardcode Haml Dialect
+
+Some syntax changes were neccessary to adopt Haml to the target languages.
+
+TODO
+
 ## TODOs
 
 * parsing parameters given to the template
 * parsing tag attributes in a sane way
-* implement variable replacement for direct output
 * multiple uncommon syntax elements
 * ...
 * document implemented functionality and introduced syntax extensions of Haml
