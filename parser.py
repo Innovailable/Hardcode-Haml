@@ -20,9 +20,6 @@
 
 import re
 
-from cpp import CppWriter
-from c import CWriter
-
 class ParserException(Exception):
 
     def __init__(self, msg, line=None):
@@ -154,7 +151,30 @@ class Parser:
         if line.startswith('='):
             self.out.evaluate(line[1:].strip())
         else:
-            self.out.write(line)
+            last = 0
+
+            # find evaluation expressions
+            while True:
+                index = line.find('#{', last)
+
+                if index == -1:
+                    break
+
+                end_index = line.find('}', index)
+
+                if end_index == -1:
+                    raise ParserException("Evaluation subexpression not closed.", self.line)
+
+                # print everything before the expression
+                self.out.write(line[last:index])
+
+                # process the actual evaluation
+                self.out.evaluate(line[index+2:end_index])
+
+                last = end_index + 1
+
+            # print the end
+            self.out.write(line[last:])
 
     def escape(self, line, pre_indent):
         self.out.write(line[1:])
