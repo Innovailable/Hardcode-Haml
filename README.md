@@ -58,7 +58,6 @@ TODO
 
 ## TODOs
 
-* parsing parameters given to the template
 * parsing tag attributes in a sane way
 * multiple uncommon syntax elements
 * ...
