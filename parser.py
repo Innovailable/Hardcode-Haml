@@ -299,6 +299,23 @@ class Parser:
         else:
             self.out.write(" %s -->\n" % line[1:].strip())
 
+    def declare(self, line="", pre_indent=False):
+        if self.declared:
+            raise ParserException("The template was already declared", self.line)
+        if pre_indent:
+            raise ParserException("Declaration can't include sub-blocks", self.line)
+
+        if self.stack:
+            raise ParserException("Can't declare inside a block", self.line)
+
+        if line.strip():
+            paras = [para.strip() for para in line.split(',')]
+        else:
+            paras = []
+
+        self.out.declare(paras)
+        self.declared = True
+
     def line_split(self, inp):
         last = None
         self.line = 0
@@ -321,6 +338,7 @@ class Parser:
 
         self.indent = 0
         self.stack = stack = []
+        self.declared = False
 
         actions = {
                 '#': self.parse_tag,
@@ -345,6 +363,11 @@ class Parser:
             start = content[0]
             action = actions[start] if start in actions else self.indent_display
 
+            # dirty hack to assure declaration without declaration line
+            # TODO: find a better way
+            if not self.declared and self.declared not in ['-', '?']:
+                self.declare()
+
             pop_val = action(content, pre_indent)
             stack.append(pop_val)
 
@@ -353,6 +376,10 @@ class Parser:
         
         # clear the stack
         self.sync_stack(0)
+
+        # we have to declare, no matter what!
+        if not self.declared:
+            self.declare()
 
         out.finish()
 

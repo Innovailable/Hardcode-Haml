@@ -28,13 +28,16 @@ class PythonWriter:
         self.name = name
 
     def start(self):
-        self.out.write("def %s(out):\n" % self.name)
-
-        self.indent = 1
+        self.indent = 0
 
     def finish(self):
         self.flush()
         self.out.write("\nif __name__ == '__main__': import sys; %s(sys.stdout)\n" % self.name)
+
+    def declare(self, paras):
+        para_str = ', '.join(['out'] + paras)
+        self.out.write("\ndef %s(%s):\n" % (self.name, para_str))
+        self.indent += 1
 
     def evaluate(self, cmd):
         self.execute("out.write(str(%s))" % cmd)

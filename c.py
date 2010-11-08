@@ -31,14 +31,18 @@ class CWriter:
 
     def start(self):
         self.out.write("#include <stdio.h>\n\n")
-        self.out.write("void %s(FILE *out) {\n" % self.name)
 
-        self.indent = 1
+        self.indent = 0
 
     def finish(self):
         self.flush()
         self.out.write("}\n")
         self.out.write("int main() { %s(stdout); return 0; }\n" % self.name)
+
+    def declare(self, paras):
+        para_str = ', '.join(['FILE *out'] + paras)
+        self.out.write("\nvoid %s(%s) {\n" % (self.name, para_str))
+        self.indent += 1
 
     def evaluate(self, cmd):
         prim = primitives.find_primitive(cmd)
