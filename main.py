@@ -19,7 +19,7 @@
 ##
 ###############################################################################
 
-from parser import Parser
+from parser import HamlFile
 from optparse import OptionParser
 from os.path import split
 
@@ -45,12 +45,19 @@ def main(argv):
         return 1
     else:
         out_module = out_modules[options.output]
+
+        opts = {
+                'indent': options.readable,
+                'debug': options.readable,
+                }
+
         for in_file in args:
             name = split(in_file)[1].split('.')[0]
 
+            parser = HamlFile(file(in_file), opts)
             writer = out_module(name, options.directory)
 
-            Parser(file(in_file), writer, readable=options.readable).parse()
+            parser.execute(writer)
 
 if __name__ == '__main__':
     import sys
