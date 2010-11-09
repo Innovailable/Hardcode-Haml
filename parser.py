@@ -171,8 +171,7 @@ class HamlFile(HamlElement):
         out.start()
 
         if not self.manual_declare:
-            if self.option('debug'):
-                out.comment("Declaring automatically, no '?' found")
+            out.comment("Declaring automatically, no '?' found")
 
             out.declare([])
 
@@ -189,7 +188,7 @@ class Declaration(ChildlessElement):
             self.paras = []
 
     def execute(self, out, indent):
-        out.declare(paras)
+        out.declare(self.paras)
 
 class Comment(HamlElement):
 
