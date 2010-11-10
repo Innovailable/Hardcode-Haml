@@ -373,7 +373,7 @@ class XmlTag(HamlElement):
 
     def parse_content(self):
         if self.data.strip():
-            self.content = Display(self.data)
+            self.content = Display(self.data[1:])
 
     def execute(self, out, indent):
         self.write_indent(indent, out)
@@ -423,7 +423,7 @@ class DirectDisplay(ChildlessElement):
 class Escape(DirectDisplay):
 
     def parse(self, data):
-        self.display = Display(data[1:].rstrip())
+        self.display = Display(data[1:])
 
 class Display:
 
@@ -431,7 +431,14 @@ class Display:
         if data.startswith('='):
             self.evaluate = True
 
-            self.data = data[1:].rstrip()
+            # TODO: parse evaluation expression ...
+
+            index = data.find(" ")
+
+            if index == -1:
+                self.fail("No command given in evaluation expression")
+            else:
+                self.data = data[index+1:]
         else:
             self.evaluate = False
             self.data = data
