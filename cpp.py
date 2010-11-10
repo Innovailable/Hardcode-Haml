@@ -22,26 +22,29 @@ from os.path import join
 
 import primitives
 
-class CppWriter:
+class AbstractCppWriter:
 
     def __init__(self, name, directory):
-        self.out = open(join(directory, "%s.cpp" % name), 'w')
         self.write_buf = []
         self.name = name
+        self.directory = directory
 
     def start(self):
-        self.out.write("#include <iostream>\n\n")
+        directory = self.directory
+        name = self.name
+
+        self.out = open(join(directory, "%s.cpp" % name), 'w')
+        self.header = open(join(directory, "%s.h" % name), 'w')
+
+        self.out.write('#include <iostream>\n#include "test.h"\n\n')
+
+        gate = "%s_H" % self.name.upper()
+
+        self.header.write("#ifndef %s\n" % gate)
+        self.header.write("#define %s\n\n" % gate)
+        self.header.write("#include <iostream>\n\n")
+
         self.indent = 0
-
-    def finish(self):
-        self.flush()
-        self.out.write("}\n")
-        self.out.write("int main() { %s(std::cout); return 0; }\n" % self.name)
-
-    def declare(self, paras):
-        para_str = ', '.join(['std::ostream &out'] + paras)
-        self.out.write("\nvoid %s(%s) {\n" % (self.name, para_str))
-        self.indent += 1
 
     def evaluate(self, cmd):
         prim = primitives.find_primitive(cmd)
@@ -57,9 +60,14 @@ class CppWriter:
         cmd = cmd.strip()
 
         if cmd.startswith('#'):
-            self.out.write(cmd + "\n")
+            out_str = cmd + "\n"
         else:
-            self.out.write("\t" * self.indent + cmd + ";\n")
+            out_str = "\t" * self.indent + cmd + ";\n"
+
+        self.out.write(out_str)
+
+        if self.header:
+            self.header.write(out_str)
 
     def write(self, data):
         # escape!
@@ -93,4 +101,56 @@ class CppWriter:
     def comment(self, data):
         self.flush()
         self.out.write("\t" * self.indent + "// " + data + "\n")
+
+class FunCppWriter(AbstractCppWriter):
+
+    def declare(self, paras):
+        para_str = ', '.join(['std::ostream &out'] + paras)
+        declaration = "void %s(%s)" % (self.name, para_str)
+
+        self.out.write("\n%s {\n" % declaration)
+
+        self.header.write("\n%s;\n\n#endif\n" % declaration)
+
+        self.header.close()
+        self.header = None
+
+        self.indent += 1
+
+    def finish(self):
+        self.flush()
+        self.out.write("}\n")
+
+class ClassCppWriter(AbstractCppWriter):
+
+    def declare(self, paras):
+        class_name = self.name.capitalize()
+        para_str = ', '.join(paras)
+        cp_str = ', '.join("{0}({0})".format(para.split()[-1]) for para in paras)
+        friend_str = "std::ostream& operator<<(std::ostream& out, %s &templ)" % class_name
+
+        # writing into the .cpp
+        self.out.write("%s {\n\ttempl.run(out);\n\treturn out;\n}\n\n" % friend_str)
+        self.out.write("void %s::run(std::ostream &out) {\n" % class_name)
+
+        # writing into the header
+        self.header.write("class %s {\npublic:\n" % class_name)
+        self.header.write("\t%s(%s) : %s {}\n" % (class_name, para_str, cp_str))
+        self.header.write("\tvoid run(std::ostream &out);\n")
+        self.header.write("\tfriend %s;" % friend_str)
+        self.header.write("\nprivate:\n")
+
+        for para in paras:
+            self.header.write("\t%s;\n" % para)
+
+        self.header.write("};\n\n#endif\n")
+
+        self.header.close()
+        self.header = None
+
+        self.indent += 2
+
+    def finish(self):
+        self.flush()
+        self.out.write("}\n")
 
