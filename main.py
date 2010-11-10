@@ -51,6 +51,7 @@ def main(argv):
         opts = {
                 'indent': options.readable,
                 'debug': options.readable,
+                'auto_indent': True,
                 }
 
         for in_file in args:

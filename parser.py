@@ -124,12 +124,31 @@ def split_lines(inp):
 class HamlFile(HamlElement):
 
     def count_indent(self, line):
-        return len(re.match("^\s*", line).group()) / 2
+        if self.indent_str == None:
+            indent = re.match("^\s*", line).group()
+
+            if indent:
+                self.indent_str = indent
+            else:
+                return 0
+
+        count = 0
+        cur = line
+        indent_len = len(self.indent_str)
+        while cur.startswith(self.indent_str):
+            count += 1
+            cur = cur[indent_len:]
+
+        if cur[0].isspace():
+            return -1
+
+        return count
 
     def parse(self, inp):
         self.manual_declare = False
-
         stack = [self]
+
+        self.indent_str = None if self.option('auto_indent') else "  "
 
         actions = {
                 '#': XmlTag,
@@ -141,8 +160,15 @@ class HamlFile(HamlElement):
                 '?': Declaration,
                 }
 
-        for line, data in enumerate(split_lines(inp)):
+        for line, data in enumerate(split_lines(inp), 1):
             indent = self.count_indent(data)
+
+            if indent == -1:
+                raise ParserException("Could not parse indent", line)
+
+            if indent >= len(stack):
+                raise ParserException("More than one indent added", line)
+
             stack = stack[:indent+1]
 
             content = data.strip()
@@ -162,7 +188,7 @@ class HamlFile(HamlElement):
                 else:
                     self.manual_declare = True
 
-            element = action(content, self.opts, line + 1)
+            element = action(content, self.opts, line)
 
             stack[-1].add_child(element)
             stack.append(element)
@@ -172,7 +198,6 @@ class HamlFile(HamlElement):
 
         if not self.manual_declare:
             out.comment("Declaring automatically, no '?' found")
-
             out.declare([])
 
         self.exec_childs(out, indent)
