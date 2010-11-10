@@ -36,7 +36,7 @@ class AbstractCppWriter:
         self.out = open(join(directory, "%s.cpp" % name), 'w')
         self.header = open(join(directory, "%s.h" % name), 'w')
 
-        self.out.write('#include <iostream>\n#include "test.h"\n\n')
+        self.out.write('#include <iostream>\n#include "%s.h"\n\n' % name)
 
         gate = "%s_H" % self.name.upper()
 
@@ -126,7 +126,6 @@ class ClassCppWriter(AbstractCppWriter):
     def declare(self, paras):
         class_name = self.name.capitalize()
         para_str = ', '.join(paras)
-        cp_str = ', '.join("{0}({0})".format(para.split()[-1]) for para in paras)
         friend_str = "std::ostream& operator<<(std::ostream& out, %s &templ)" % class_name
 
         # writing into the .cpp
@@ -135,7 +134,11 @@ class ClassCppWriter(AbstractCppWriter):
 
         # writing into the header
         self.header.write("class %s {\npublic:\n" % class_name)
-        self.header.write("\t%s(%s) : %s {}\n" % (class_name, para_str, cp_str))
+        self.header.write("\t%s(%s) " % (class_name, para_str))
+        if paras:
+            cp_str = ', '.join("{0}({0})".format(para.split()[-1]) for para in paras)
+            self.header.write(": %s" % cp_str)
+        self.header.write("{}\n")
         self.header.write("\tvoid run(std::ostream &out);\n")
         self.header.write("\tfriend %s;" % friend_str)
         self.header.write("\nprivate:\n")
