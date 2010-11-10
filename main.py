@@ -27,7 +27,9 @@ import c, cpp, python
 
 def main(argv):
     out_modules = {
-            'cpp': cpp.CppWriter,
+            'cpp': cpp.ClassCppWriter,
+            'classcpp': cpp.ClassCppWriter,
+            'funcpp': cpp.FunCppWriter,
             'c': c.CWriter,
             'python': python.PythonWriter
             }
