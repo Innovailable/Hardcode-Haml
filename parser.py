@@ -433,17 +433,61 @@ class Doctype(ChildlessElement):
         parts = data.split()[1:]
 
         types = {
-                'Transitional': {
+                'default': {
                     'fpi': "-//W3C//DTD XHTML 1.0 Transitional//EN",
                     'dtd': "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
                     },
+                'Strict': {
+                    'fpi': "-//W3C//DTD XHTML 1.0 Strict//EN",
+                    'dtd': "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd",
+                    },
+                'Frameset': {
+                    'fpi': "-//W3C//DTD XHTML 1.0 Frameset//EN",
+                    'dtd': "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd",
+                    },
+                '1.1': {
+                    'fpi': "-//W3C//DTD XHTML 1.1//EN",
+                    'dtd': "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd",
+                    },
+                'Basic': {
+                    'fpi': "-//W3C//DTD XHTML Basic 1.1//EN",
+                    'dtd': "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd",
+                    },
+                'Mobile': {
+                    'fpi': "-//WAPFORUM//DTD XHTML Mobile 1.2//EN",
+                    'dtd': "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd",
+                    },
+                'RDFa': {
+                    'fpi': "-//W3C//DTD XHTML+RDFa 1.0//EN",
+                    'dtd': "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd",
+                    },
                 }
 
+        if self.option('format') == 'html4':
+            html4 = {
+                    'default': {
+                        'fpi': "-//W3C//DTD HTML 4.01 Transitional//EN",
+                        'dtd': "http://www.w3.org/TR/html4/loose.dtd",
+                        },
+                    'Strict': {
+                        'fpi': "-//W3C//DTD HTML 4.01//EN",
+                        'dtd': "-//W3C//DTD HTML 4.01//EN",
+                        },
+                    'Frameset': {
+                        'fpi': "-//W3C//DTD HTML 4.01 Frameset//EN",
+                        'dtd': "http://www.w3.org/TR/html4/frameset.dtd",
+                        },
+                    }
+
+            types.update(html4)
+
         if len(parts) == 0:
-            self.set_doctype(**types['Transitional'])
+            self.set_doctype(**types['default'])
         elif parts[0] == 'XML':
             enc = parts[1] if len(parts) > 1 else 'utf-8'
             self.disp = "<?xml version='1.0' encoding='{enc}' ?>".format(enc=enc)
+        elif parts[0] == '5':
+            self.disp = "<!DOCTYPE html>"
         else:
             doctype = parts[0]
             if doctype in types:
