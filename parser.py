@@ -245,10 +245,20 @@ class Comment(HamlElement):
 class Execution(HamlElement):
 
     def parse(self, data):
-        self.command = data[1:].strip()
+        if data[1] == '#':
+            # Haml comment
+            self.comment = True
+            self.text = data[2:].strip()
+        else:
+            # actual execution
+            self.comment = False
+            self.command = data[1:].strip()
 
     def execute(self, out, indent):
-        if self.childs:
+        if self.comment:
+            if self.option('debug'):
+                out.comment(self.text)
+        elif self.childs:
             out.block_exec(self.command)
 
             self.exec_childs(out, indent)

@@ -84,7 +84,6 @@ TODO
 
 ### May have
 
-* haml comments -#
 * whitespace removal (&lt; and >)
 * conditional comments /\[] (only needed to support IE afaik)
 * whitespace preservation
