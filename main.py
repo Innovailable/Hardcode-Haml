@@ -49,7 +49,7 @@ def main(argv):
         out_module = out_modules[options.output]
 
         opts = {
-                'indent': options.readable,
+                'indent': True,
                 'debug': options.readable,
                 'auto_indent': True,
                 }

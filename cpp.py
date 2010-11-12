@@ -151,7 +151,7 @@ class ClassCppWriter(AbstractCppWriter):
         self.header.close()
         self.header = None
 
-        self.indent += 2
+        self.indent += 1
 
     def finish(self):
         self.flush()
