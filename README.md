@@ -60,7 +60,11 @@ TODO
 
 TODO
 
-## TODOs
+## Example
+
+There is an example in the [Wiki](https://github.com/thammi/Hardcode-Haml/wiki/Example-Workflow-%28C++%29).
+
+## Todos
 
 ### Tasks
 
