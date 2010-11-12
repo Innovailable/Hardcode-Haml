@@ -56,6 +56,10 @@ Some syntax changes were neccessary to adopt Haml to the target languages.
 
 TODO
 
+### Subtle changes
+
+TODO
+
 ## TODOs
 
 ### Tasks
@@ -71,7 +75,6 @@ TODO
 
 #### Must have
 
-* doctypes (!!!)
 * direct HTML tags (status unknown)
 * tag parsing (check some behaviour)
 * entity escape (static and dynamic)
@@ -81,16 +84,16 @@ TODO
 
 ### May have
 
-* boolean attributes?
-* whitespace removal (&lt; and &rt;)
-* conditional comments /\[] (only needed to support IE afaik)
 * haml comments -#
+* whitespace removal (&lt; and >)
+* conditional comments /\[] (only needed to support IE afaik)
 * whitespace preservation
 * escaping/unescaping html in evaluations
 
 ### Won't implement (in the near future)
 
 * object reference \[] (too close to the target language)
+* boolean attributes?
 
 ## Links
 
