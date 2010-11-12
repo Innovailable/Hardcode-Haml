@@ -58,12 +58,39 @@ TODO
 
 ## TODOs
 
-* parsing tag attributes in a sane way
-* multiple uncommon syntax elements
+### Tasks
+
+* implement most common syntax/language elements (see below)
 * ...
 * document implemented functionality and introduced syntax extensions of Haml
 * clean up the code (especially in the parser)
+* target language side helper
 * ...
+
+### Syntax/Language Elements
+
+#### Must have
+
+* doctypes (!!!)
+* direct HTML tags (status unknown)
+* tag parsing (check some behaviour)
+* entity escape (static and dynamic)
+* self closing tags
+* filters (infrastructure, some filters)
+* multiline
+
+### May have
+
+* boolean attributes?
+* whitespace removal (&lt; and &rt;)
+* conditional comments /\[] (only needed to support IE afaik)
+* haml comments -#
+* whitespace preservation
+* escaping/unescaping html in evaluations
+
+### Won't implement (in the near future)
+
+* object reference \[] (too close to the target language)
 
 ## Links
 
