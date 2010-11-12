@@ -158,6 +158,7 @@ class HamlFile(HamlElement):
                 '/': Comment,
                 '\\': Escape,
                 '?': Declaration,
+                '!!!': Doctype,
                 }
 
         for line, data in enumerate(split_lines(inp), 1):
@@ -173,14 +174,15 @@ class HamlFile(HamlElement):
 
             content = data.strip()
 
-            start = content[0]
-            if start in actions:
-                action = actions[start]
+            for prefix, pos_action in actions.items():
+                if content.startswith(prefix):
+                    action = pos_action
+                    break
             else:
                 action = DirectDisplay
 
             # TODO: still kind of hacky
-            if start == '?':
+            if content.startswith('?'):
                 if self.manual_declare:
                     self.fail("Multiple declarations")
                 elif len(stack) > 1:
@@ -424,6 +426,40 @@ class Escape(DirectDisplay):
 
     def parse(self, data):
         self.display = Display(data[1:])
+
+class Doctype(ChildlessElement):
+
+    def parse(self, data):
+        parts = data.split()[1:]
+
+        types = {
+                'Transitional': {
+                    'fpi': "-//W3C//DTD XHTML 1.0 Transitional//EN",
+                    'dtd': "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
+                    },
+                }
+
+        if len(parts) == 0:
+            self.set_doctype(**types['Transitional'])
+        elif parts[0] == 'XML':
+            enc = parts[1] if len(parts) > 1 else 'utf-8'
+            self.disp = "<?xml version='1.0' encoding='{enc}' ?>".format(enc=enc)
+        else:
+            doctype = parts[0]
+            if doctype in types:
+                self.set_doctype(**types[doctype])
+            else:
+                self.fail("Unknown doctype requested")
+
+    def set_doctype(self, fpi, dtd):
+        self.disp = '<!DOCTYPE html PUBLIC "{fpi}" "{dtd}">'.format(fpi=fpi, dtd=dtd)
+
+    def execute(self, out, indent):
+        if indent > 0:
+            self.fail("Doctype can't be inside a block")
+
+        out.write(self.disp)
+        out.write("\n")
 
 class Display:
 
