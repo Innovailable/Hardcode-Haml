@@ -472,7 +472,8 @@ class Doctype(ChildlessElement):
         types = {
                 'default': {
                     'fpi': "-//W3C//DTD XHTML 1.0 Transitional//EN",
-                    'dtd': "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
+                    'dtd': "http://www.w3.org/\
+                            TR/xhtml1/DTD/xhtml1-transitional.dtd",
                     },
                 'Strict': {
                     'fpi': "-//W3C//DTD XHTML 1.0 Strict//EN",
@@ -480,7 +481,8 @@ class Doctype(ChildlessElement):
                     },
                 'Frameset': {
                     'fpi': "-//W3C//DTD XHTML 1.0 Frameset//EN",
-                    'dtd': "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd",
+                    'dtd': "http://www.w3.org/\
+                            TR/xhtml1/DTD/xhtml1-frameset.dtd",
                     },
                 '1.1': {
                     'fpi': "-//W3C//DTD XHTML 1.1//EN",
@@ -488,11 +490,13 @@ class Doctype(ChildlessElement):
                     },
                 'Basic': {
                     'fpi': "-//W3C//DTD XHTML Basic 1.1//EN",
-                    'dtd': "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd",
+                    'dtd': "http://www.w3.org/\
+                            TR/xhtml-basic/xhtml-basic11.dtd",
                     },
                 'Mobile': {
                     'fpi': "-//WAPFORUM//DTD XHTML Mobile 1.2//EN",
-                    'dtd': "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd",
+                    'dtd': "http://www.openmobilealliance.org/\
+                            tech/DTD/xhtml-mobile12.dtd",
                     },
                 'RDFa': {
                     'fpi': "-//W3C//DTD XHTML+RDFa 1.0//EN",
@@ -533,7 +537,8 @@ class Doctype(ChildlessElement):
                 self.fail("Unknown doctype requested")
 
     def set_doctype(self, fpi, dtd):
-        self.disp = '<!DOCTYPE html PUBLIC "{fpi}" "{dtd}">'.format(fpi=fpi, dtd=dtd)
+        fstr = '<!DOCTYPE html PUBLIC "{fpi}" "{dtd}">'
+        self.disp = fstr.format(fpi=fpi, dtd=dtd)
 
     def execute(self, out, indent):
         if indent > 0:

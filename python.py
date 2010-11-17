@@ -23,7 +23,8 @@ from os.path import join
 class PythonWriter:
 
     def __init__(self, name, directory):
-        self.out = open(join(directory, "%s.py" % name), 'w')
+        file_name = join(directory, "{name}.py".format(name=name))
+        self.out = open(file_name, 'w')
         self.write_buf = []
         self.name = name
 
@@ -32,15 +33,15 @@ class PythonWriter:
 
     def finish(self):
         self.flush()
-        self.out.write("\nif __name__ == '__main__': import sys; %s(sys.stdout)\n" % self.name)
 
     def declare(self, paras):
         para_str = ', '.join(['out'] + paras)
-        self.out.write("\ndef %s(%s):\n" % (self.name, para_str))
+        fstr = "\ndef {name}({para}):\n"
+        self.out.write(fstr.format(name=self.name, para=para_str))
         self.indent += 1
 
     def evaluate(self, cmd):
-        self.execute("out.write(str(%s))" % cmd)
+        self.execute("out.write(str({cmd}))".format(cmd=cmd))
 
     def execute(self, cmd):
         self.flush()
@@ -54,7 +55,7 @@ class PythonWriter:
         if self.write_buf:
             data = ''.join(self.write_buf)
             self.write_buf = []
-            self.execute("out.write('%s')" % data)
+            self.execute("out.write('{data}')".format(data=data))
 
     def block_exec(self, cmd):
         self.execute(cmd + ":")

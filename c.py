@@ -25,7 +25,8 @@ import primitives
 class CWriter:
 
     def __init__(self, name, directory):
-        self.out = open(join(directory, "%s.c" % name), 'w')
+        file_name = join(directory, "{name}.c".format(name=name))
+        self.out = open(file_name, 'w')
         self.write_buf = []
         self.name = name
 
@@ -37,11 +38,11 @@ class CWriter:
     def finish(self):
         self.flush()
         self.out.write("}\n")
-        self.out.write("int main() { %s(stdout); return 0; }\n" % self.name)
 
     def declare(self, paras):
         para_str = ', '.join(['FILE *out'] + paras)
-        self.out.write("\nvoid %s(%s) {\n" % (self.name, para_str))
+        dec_f = "\nvoid {name}({para}) {{\n"
+        self.out.write(dec_f.format(name=self.name, para=para_str))
         self.indent += 1
 
     def evaluate(self, cmd):
@@ -50,7 +51,7 @@ class CWriter:
         if prim:
             self.write_buf.append(prim)
         else:
-            self.execute("fputs(%s, out)" % cmd)
+            self.execute("fputs({cmd}, out)".format(cmd=cmd))
 
     def execute(self, cmd):
         self.flush()
@@ -79,7 +80,7 @@ class CWriter:
         if self.write_buf:
             data = ''.join(self.write_buf)
             self.write_buf = []
-            self.execute('fputs("%s", out)' % data)
+            self.execute('fputs("{data}", out)'.format(data=data))
 
     def block_exec(self, cmd):
         self.flush()

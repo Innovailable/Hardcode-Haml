@@ -33,15 +33,16 @@ class AbstractCppWriter:
         directory = self.directory
         name = self.name
 
-        self.out = open(join(directory, "%s.cpp" % name), 'w')
-        self.header = open(join(directory, "%s.h" % name), 'w')
+        self.out = open(join(directory, "{name}.cpp".format(name=name)), 'w')
+        self.header = open(join(directory, "{name}.h".format(name=name)), 'w')
 
-        self.out.write('#include <iostream>\n#include "%s.h"\n\n' % name)
+        inc_f = '#include <iostream>\n#include "{name}.h"\n\n'
+        self.out.write(inc_f.format(name=name))
 
-        gate = "%s_H" % self.name.upper()
+        gate = self.name.upper() + "_H"
 
-        self.header.write("#ifndef %s\n" % gate)
-        self.header.write("#define %s\n\n" % gate)
+        self.header.write("#ifndef {gate}\n".format(gate=gate))
+        self.header.write("#define {gate}\n\n".format(gate=gate))
         self.header.write("#include <iostream>\n\n")
 
         self.indent = 0
@@ -52,7 +53,7 @@ class AbstractCppWriter:
         if prim:
             self.write_buf.append(prim)
         else:
-            self.execute("out << (%s)" % cmd)
+            self.execute("out << ({cmd})".format(cmd=cmd))
 
     def execute(self, cmd):
         self.flush()
@@ -86,7 +87,7 @@ class AbstractCppWriter:
         if self.write_buf:
             data = ''.join(self.write_buf)
             self.write_buf = []
-            self.execute('out << "%s"' % data)
+            self.execute('out << "{data}"'.format(data=data))
 
     def block_exec(self, cmd):
         self.flush()
@@ -106,11 +107,11 @@ class FunCppWriter(AbstractCppWriter):
 
     def declare(self, paras):
         para_str = ', '.join(['std::ostream &out'] + paras)
-        declaration = "void %s(%s)" % (self.name, para_str)
+        decl = "void {name}({para})".format(name=self.name, para=para_str)
 
-        self.out.write("\n%s {\n" % declaration)
+        self.out.write("\n{decl} {{\n".format(decl=decl))
 
-        self.header.write("\n%s;\n\n#endif\n" % declaration)
+        self.header.write("\n{decl};\n\n#endif\n".format(decl))
 
         self.header.close()
         self.header = None
@@ -119,34 +120,44 @@ class FunCppWriter(AbstractCppWriter):
 
     def finish(self):
         self.flush()
-        self.out.write("}\n")
+        self.out.write("}}\n")
 
 class ClassCppWriter(AbstractCppWriter):
 
     def declare(self, paras):
+        h_write = self.header.write
+        o_write = self.out.write
+
         class_name = self.name.capitalize()
         para_str = ', '.join(paras)
-        friend_str = "std::ostream& operator<<(std::ostream& out, %s &templ)" % class_name
+
+        friend_f = "std::ostream& operator<<(std::ostream& out, {name} &templ)"
+        friend_str = friend_f.format(name=class_name)
 
         # writing into the .cpp
-        self.out.write("%s {\n\ttempl.run(out);\n\treturn out;\n}\n\n" % friend_str)
-        self.out.write("void %s::run(std::ostream &out) {\n" % class_name)
+        fstr = "{friend} {{\n\ttempl.run(out);\n\treturn out;\n}}\n\n"
+        o_write(fstr.format(friend=friend_str))
+        o_write("void %s::run(std::ostream &out) {\n" % class_name)
 
         # writing into the header
-        self.header.write("class %s {\npublic:\n" % class_name)
-        self.header.write("\t%s(%s) " % (class_name, para_str))
+        h_write("class {name} {{\npublic:\n".format(name=class_name))
+        h_write("\t{name}({para}) ".format(name=class_name, para=para_str))
+
         if paras:
-            cp_str = ', '.join("{0}({0})".format(para.split()[-1]) for para in paras)
-            self.header.write(": %s" % cp_str)
-        self.header.write("{}\n")
-        self.header.write("\tvoid run(std::ostream &out);\n")
-        self.header.write("\tfriend %s;" % friend_str)
-        self.header.write("\nprivate:\n")
+            cp_str = ', '.join("{0}({0})".format(para.split()[-1])
+                    for para in paras)
+
+            h_write(": " + cp_str)
+
+        h_write("{}\n")
+        h_write("\tvoid run(std::ostream &out);\n")
+        h_write("\tfriend {friend};".format(friend=friend_str))
+        h_write("\nprivate:\n")
 
         for para in paras:
-            self.header.write("\t%s;\n" % para)
+            h_write("\t{para};\n".format(para=para))
 
-        self.header.write("};\n\n#endif\n")
+        h_write("};\n\n#endif\n")
 
         self.header.close()
         self.header = None
