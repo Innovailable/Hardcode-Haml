@@ -72,7 +72,7 @@ There is an example in the [Wiki](https://github.com/thammi/Hardcode-Haml/wiki/E
 * ...
 * document implemented functionality and introduced syntax extensions of Haml
 * clean up the code (especially in the parser)
-* target language side helper
+* target language site helper
 * ...
 
 ### Syntax/Language Elements

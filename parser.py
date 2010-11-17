@@ -21,6 +21,7 @@
 import re
 
 def is_escaped(value, index):
+    '''Returns True if the character at index is escaped with a \ '''
     cur = index - 1
 
     if cur < 0:
@@ -38,6 +39,9 @@ def is_escaped(value, index):
     return (index - cur - 1) % 2
 
 def find_unescaped(haystack, needle, start=0):
+    '''Returns the index of the first unescaped appearance of needle in
+    haystack or -1'''
+
     last = start
 
     while True:
@@ -57,18 +61,17 @@ def find_unescaped(haystack, needle, start=0):
     return -1
 
 class ParserException(Exception):
+    '''An exception which occured during parsing at a specific line'''
 
-    def __init__(self, msg, line=None):
+    def __init__(self, msg, line):
         self.msg = msg
         self.line = line
 
     def __str__(self):
-        if self.line == None:
-            return self.msg
-        else:
-            return "[at line %i] %s" % (self.line, self.msg)
+        return "[at line %i] %s" % (self.line, self.msg)
 
 class HamlElement:
+    '''A syntax element in a haml tree'''
 
     def __init__(self, data, opts, line=None):
         self.opts = opts
@@ -78,12 +81,15 @@ class HamlElement:
         self.parse(data)
 
     def fail(self, msg):
+        '''Raise a ParserException with the current line number'''
         raise ParserException(msg, self.line)
 
     def add_child(self, child):
+        '''Append an element to this sub-tree'''
         self.childs.append(child)
 
     def option(self, key):
+        '''Returns the value of the otion or None'''
         opts = self.opts
 
         if key in opts:
@@ -92,10 +98,12 @@ class HamlElement:
             return None
 
     def write_indent(self, indent, out):
+        '''Write an indent with given length according to the options'''
         if self.option('indent'):
             out.write(" " * (indent * 2))
 
     def exec_childs(self, out, indent):
+        '''Call execute() on all child elements'''
         for child in self.childs:
             if self.option('debug') and child.line != None:
                 out.comment(">> haml line %i started" % child.line)
@@ -106,24 +114,32 @@ class HamlElement:
                 out.comment("<< haml line %i ended" % child.line)
 
     def parse(self, data):
+        '''Overwrite this to parse the Haml input'''
         raise NotImplementedError
 
     def execute(self, out, indent):
+        '''Write output to out according previously parsed input'''
         raise NotImplementedError
 
 class ChildlessElement(HamlElement):
+    '''A Haml element throwing an exception when attempting to add childs'''
 
     def add_child(self, child):
         self.fail("This element can't contain sub-blocks")
 
 def split_lines(inp):
+    '''Generator yielding haml lines from a file'''
     for line in inp:
-        if line.split():
+        if line.strip():
             yield line
 
 class HamlFile(HamlElement):
+    '''Root Haml element parsing the whole file'''
 
     def count_indent(self, line):
+        '''Count the number of indents according to options (might use auto
+        indent)'''
+
         if self.indent_str == None:
             indent = re.match("^\s*", line).group()
 
@@ -145,6 +161,7 @@ class HamlFile(HamlElement):
         return count
 
     def parse(self, inp):
+        '''Parse the input file'''
         self.manual_declare = False
         stack = [self]
 
@@ -196,6 +213,8 @@ class HamlFile(HamlElement):
             stack.append(element)
 
     def execute(self, out, indent=0):
+        '''Output the Haml file into the given output module'''
+
         out.start()
 
         if not self.manual_declare:
@@ -207,6 +226,7 @@ class HamlFile(HamlElement):
         out.finish()
 
 class Declaration(ChildlessElement):
+    '''Element which declares the parameters of the template'''
 
     def parse(self, data):
         if data.strip():
@@ -218,6 +238,7 @@ class Declaration(ChildlessElement):
         out.declare(self.paras)
 
 class Comment(HamlElement):
+    '''Element representing a HTML comment'''
 
     def parse(self, data):
         self.comment = data[1:].strip()
@@ -243,6 +264,8 @@ class Comment(HamlElement):
         out.write("-->\n")
 
 class Execution(HamlElement):
+    '''Element representing a command or block command in the target
+    language'''
 
     def parse(self, data):
         if data[1] == '#':
@@ -268,6 +291,7 @@ class Execution(HamlElement):
             self.out.execute(self.command)
 
 class XmlTag(HamlElement):
+    '''Element representing an XML tag'''
 
     def parse(self, data):
         self.attrs = {}
@@ -423,6 +447,7 @@ class XmlTag(HamlElement):
 
 
 class DirectDisplay(ChildlessElement):
+    '''Directly Displaying some payload (may be evaluated)'''
 
     def parse(self, data):
         self.display = Display(data)
@@ -433,11 +458,13 @@ class DirectDisplay(ChildlessElement):
         out.write("\n")
 
 class Escape(DirectDisplay):
+    '''Like DirectDisplay but escaping a special character (starts with \)'''
 
     def parse(self, data):
         self.display = Display(data[1:])
 
 class Doctype(ChildlessElement):
+    '''Element representing a doctype declaration'''
 
     def parse(self, data):
         parts = data.split()[1:]
@@ -516,6 +543,8 @@ class Doctype(ChildlessElement):
         out.write("\n")
 
 class Display:
+    '''Helper parsing and executing displaying. Will evaluate when starting
+    with ='''
 
     def __init__(self, data):
         if data.startswith('='):
