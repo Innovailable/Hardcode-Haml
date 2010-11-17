@@ -288,7 +288,7 @@ class Execution(HamlElement):
 
             out.close_block()
         else:
-            self.out.execute(self.command)
+            out.execute(self.command)
 
 class XmlTag(HamlElement):
     '''Element representing an XML tag'''
