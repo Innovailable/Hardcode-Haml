@@ -248,7 +248,7 @@ class Comment(HamlElement):
         out.write("<!--")
 
         if self.childs:
-            if self.content:
+            if self.comment:
                 self.fail("No content allowed for nested comments")
 
             out.write("\n")
@@ -409,7 +409,7 @@ class XmlTag(HamlElement):
 
     def parse_content(self):
         if self.data.strip():
-            self.content = Display(self.data[1:])
+            self.content = Display(self.data[1:], self.opts, self.line)
 
     def execute(self, out, indent):
         self.write_indent(indent, out)
@@ -450,7 +450,7 @@ class DirectDisplay(ChildlessElement):
     '''Directly Displaying some payload (may be evaluated)'''
 
     def parse(self, data):
-        self.display = Display(data)
+        self.display = Display(data, self.opts, self.line)
 
     def execute(self, out, indent):
         self.write_indent(indent, out)
@@ -461,7 +461,7 @@ class Escape(DirectDisplay):
     '''Like DirectDisplay but escaping a special character (starts with \)'''
 
     def parse(self, data):
-        self.display = Display(data[1:])
+        self.display = Display(data[1:], self.opts, self.line)
 
 class Doctype(ChildlessElement):
     '''Element representing a doctype declaration'''
@@ -547,11 +547,11 @@ class Doctype(ChildlessElement):
         out.write(self.disp)
         out.write("\n")
 
-class Display:
+class Display(HamlElement):
     '''Helper parsing and executing displaying. Will evaluate when starting
     with ='''
 
-    def __init__(self, data):
+    def parse(self, data):
         if data.startswith('='):
             self.evaluate = True
 
@@ -567,11 +567,11 @@ class Display:
             self.evaluate = False
             self.data = data
 
-    def execute(self, out):
+    def execute(self, out, indent=None):
         data = self.data
 
         if self.evaluate:
-            self.out.evaluate(self.data)
+            out.evaluate(self.data)
         else:
             last = 0
 
