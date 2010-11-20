@@ -18,7 +18,7 @@
 ##
 ###############################################################################
 
-from os.path import join
+from os.path import join, exists
 
 import primitives
 
@@ -122,25 +122,42 @@ class FunCppWriter(AbstractCppWriter):
         self.flush()
         self.out.write("}}\n")
 
+template_header = '''\
+#ifndef HAMLTEMPLATE_H
+#define HAMLTEMPLATE_H
+
+#include <ostream>
+
+class HamlTemplate {
+public:
+    virtual void run(std::ostream& out) = 0;
+    friend std::ostream& operator<<(std::ostream& out, HamlTemplate &templ) { templ.run(out); }
+};
+
+#endif /* HAMLTEMPLATE_H */
+'''
+
 class ClassCppWriter(AbstractCppWriter):
 
     def declare(self, paras):
+        th_file = join(self.directory, "hamltemplate.h")
+        if not exists(th_file):
+            th_out = open(th_file, 'w')
+            th_out.write(template_header)
+            th_out.close()
+
         h_write = self.header.write
         o_write = self.out.write
 
         class_name = self.name.capitalize()
         para_str = ', '.join(paras)
 
-        friend_f = "std::ostream& operator<<(std::ostream& out, {name} &templ)"
-        friend_str = friend_f.format(name=class_name)
-
         # writing into the .cpp
-        fstr = "{friend} {{\n\ttempl.run(out);\n\treturn out;\n}}\n\n"
-        o_write(fstr.format(friend=friend_str))
         o_write("void %s::run(std::ostream &out) {\n" % class_name)
 
         # writing into the header
-        h_write("class {name} {{\npublic:\n".format(name=class_name))
+        h_write('#include "hamltemplate.h"\n\n')
+        h_write("class {name} : public HamlTemplate {{\npublic:\n".format(name=class_name))
         h_write("\t{name}({para}) ".format(name=class_name, para=para_str))
 
         if paras:
@@ -150,8 +167,7 @@ class ClassCppWriter(AbstractCppWriter):
             h_write(": " + cp_str)
 
         h_write("{}\n")
-        h_write("\tvoid run(std::ostream &out);\n")
-        h_write("\tfriend {friend};".format(friend=friend_str))
+        h_write("\tvirtual void run(std::ostream &out);\n")
         h_write("\nprivate:\n")
 
         for para in paras:
