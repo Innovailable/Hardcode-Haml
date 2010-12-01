@@ -36,9 +36,19 @@ def main(argv):
 
     optp = OptionParser(usage="usage: %prog [options] file [...]")
 
-    optp.add_option("-o", "--output", help="Determine Output module (language)", metavar="MODULE", default="cpp")
-    optp.add_option("-d", "--directory", help="Set the output directory", metavar="DIR", default=".")
-    optp.add_option("-r", "--readable", help="Make output more readable for debugging", action="store_true")
+    optp.add_option("-o", "--output",
+            help="Determine Output module (language)",
+            metavar="MODULE",
+            default="cpp")
+
+    optp.add_option("-d", "--directory",
+            help="Set the output directory",
+            metavar="DIR",
+            default=".")
+
+    optp.add_option("-r", "--readable",
+            help="Make output more readable for debugging",
+            action="store_true")
     
     (options, args) = optp.parse_args()
 
