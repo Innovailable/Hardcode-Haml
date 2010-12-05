@@ -19,6 +19,7 @@
 ###############################################################################
 
 from os.path import join, exists
+import re
 
 import primitives
 
@@ -150,7 +151,9 @@ class ClassCppWriter(AbstractCppWriter):
         h_write = self.header.write
         o_write = self.out.write
 
-        class_name = self.name.capitalize()
+        re_cap = lambda m: m.group()[-1].capitalize()
+        class_name = re.sub("^[a-z]|_[a-z]", re_cap, self.name);
+
         para_str = ', '.join(paras)
 
         # writing into the .cpp
