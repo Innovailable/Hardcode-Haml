@@ -472,8 +472,7 @@ class Doctype(ChildlessElement):
         types = {
                 'default': {
                     'fpi': "-//W3C//DTD XHTML 1.0 Transitional//EN",
-                    'dtd': "http://www.w3.org/\
-                            TR/xhtml1/DTD/xhtml1-transitional.dtd",
+                    'dtd': "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
                     },
                 'Strict': {
                     'fpi': "-//W3C//DTD XHTML 1.0 Strict//EN",
