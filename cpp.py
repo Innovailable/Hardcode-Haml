@@ -153,7 +153,7 @@ class ClassCppWriter(AbstractCppWriter):
 
         # getting a sane class name
         re_up = lambda m: m.group(1).upper()
-        class_name = re.sub("(?:^|_)([a-z])", re_up, self.name);
+        class_name = re.sub("(?:^|_)([a-z])", re_up, self.name)
 
         para_str = ', '.join(paras)
 
