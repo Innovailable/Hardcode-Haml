@@ -151,8 +151,9 @@ class ClassCppWriter(AbstractCppWriter):
         h_write = self.header.write
         o_write = self.out.write
 
-        re_cap = lambda m: m.group()[-1].capitalize()
-        class_name = re.sub("^[a-z]|_[a-z]", re_cap, self.name);
+        # getting a sane class name
+        re_up = lambda m: m.group(1).upper()
+        class_name = re.sub("(?:^|_)([a-z])", re_up, self.name);
 
         para_str = ', '.join(paras)
 
