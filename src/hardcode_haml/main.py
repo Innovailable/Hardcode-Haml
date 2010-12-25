@@ -19,11 +19,12 @@
 ##
 ###############################################################################
 
-from parser import HamlFile
 from optparse import OptionParser
 from os.path import split
 
-import c, cpp, python
+from hardcode_haml.parser import HamlFile
+
+from hardcode_haml.lang import c, cpp, python
 
 def main(argv):
     out_modules = {

@@ -20,7 +20,7 @@
 
 from os.path import join
 
-import primitives
+from hardcode_haml import primitives
 
 class CWriter:
 

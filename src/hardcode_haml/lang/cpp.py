@@ -21,7 +21,7 @@
 from os.path import join, exists
 import re
 
-import primitives
+from hardcode_haml import primitives
 
 class AbstractCppWriter:
 
