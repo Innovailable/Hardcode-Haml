@@ -23,7 +23,7 @@ from os.path import join
 class PythonWriter:
 
     def __init__(self, name, directory):
-        file_name = join(directory, "{name}.py".format(name=name))
+        file_name = join(directory, name + ".py")
         self.out = open(file_name, 'w')
         self.write_buf = []
         self.name = name

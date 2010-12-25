@@ -34,8 +34,8 @@ class AbstractCppWriter:
         directory = self.directory
         name = self.name
 
-        self.out = open(join(directory, "{name}.cpp".format(name=name)), 'w')
-        self.header = open(join(directory, "{name}.h".format(name=name)), 'w')
+        self.out = open(join(directory, name + ".cpp"), 'w')
+        self.header = open(join(directory, name + ".h"), 'w')
 
         inc_f = '#include <iostream>\n#include "{name}.h"\n\n'
         self.out.write(inc_f.format(name=name))
