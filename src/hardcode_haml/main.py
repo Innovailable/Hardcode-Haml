@@ -66,7 +66,15 @@ def main(argv):
                 }
 
         for in_file in args:
-            name = split(in_file)[1].split('.')[0]
+            file_name = split(in_file)[1]
+
+            # determine template name
+            if file_name.lower().endswith(".haml"):
+                # the sane way
+                name = file_name[:-5]
+            else:
+                # backup solution
+                name = file_name.split('.')[0]
 
             parser = HamlFile(file(in_file), opts)
             writer = out_module(name, options.directory)
