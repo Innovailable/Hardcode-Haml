@@ -66,10 +66,10 @@ class AbstractCppWriter:
         else:
             out_str = "\t" * self.indent + cmd + ";\n"
 
-        self.out.write(out_str)
-
         if self.header:
             self.header.write(out_str)
+        else:
+            self.out.write(out_str)
 
     def write(self, data):
         # escape!
