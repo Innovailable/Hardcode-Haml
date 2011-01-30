@@ -428,9 +428,9 @@ class XmlTag(HamlElement):
 
             out.write('"')
 
-        out.write(">")
-
         if self.childs:
+            out.write(">")
+
             if self.content:
                 self.fail("No content allowed for nested tags")
 
@@ -439,11 +439,15 @@ class XmlTag(HamlElement):
             self.exec_childs(out, indent + 1)
 
             self.write_indent(indent, out)
+
+            out.write("</%s>\n" % self.name)
         else:
             if self.content:
+                out.write(">")
                 self.content.execute(out)
-
-        out.write("</%s>\n" % self.name)
+                out.write("</%s>\n" % self.name)
+            else:
+                out.write(" />")
 
 
 class DirectDisplay(ChildlessElement):
