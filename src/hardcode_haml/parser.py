@@ -168,13 +168,13 @@ class HamlFile(HamlElement):
         self.indent_str = None if self.option('auto_indent') else "  "
 
         actions = {
-                '#': XmlTag,
-                '%': XmlTag,
-                '.': XmlTag,
+                '#\w+': XmlTag,
+                '%\w+': XmlTag,
+                '\.\+': XmlTag,
                 '-': Execution,
                 '/': Comment,
-                '\\': Escape,
-                '?': Declaration,
+                '\\\\': Escape,
+                '\?': Declaration,
                 '!!!': Doctype,
                 }
 
@@ -191,8 +191,8 @@ class HamlFile(HamlElement):
 
             content = data.strip()
 
-            for prefix, pos_action in actions.items():
-                if content.startswith(prefix):
+            for pattern, pos_action in actions.items():
+                if re.match(pattern, content):
                     action = pos_action
                     break
             else:
