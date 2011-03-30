@@ -170,7 +170,7 @@ class HamlFile(HamlElement):
         actions = {
                 '#\w+': XmlTag,
                 '%\w+': XmlTag,
-                '\.\+': XmlTag,
+                '\.\w+': XmlTag,
                 '-': Execution,
                 '/': Comment,
                 '\\\\': Escape,
