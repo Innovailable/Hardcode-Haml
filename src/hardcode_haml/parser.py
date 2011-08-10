@@ -142,9 +142,9 @@ class ChildlessElement(HamlElement):
 
 def split_lines(inp):
     '''Generator yielding haml lines from a file'''
-    for line in inp:
+    for num, line in enumerate(inp, 1):
         if line.strip():
-            yield line
+            yield num, line
 
 class HamlFile(HamlElement):
     '''Root Haml element parsing the whole file'''
@@ -191,7 +191,7 @@ class HamlFile(HamlElement):
                 '!!!': Doctype,
                 }
 
-        for line, data in enumerate(split_lines(inp), 1):
+        for line, data in split_lines(inp):
             indent = self.count_indent(data)
 
             if indent == -1:
