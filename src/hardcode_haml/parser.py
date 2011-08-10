@@ -20,6 +20,19 @@
 
 import re
 
+auto_closing_tags = [
+        'meta',
+        'img',
+        'link',
+        'br',
+        'hr',
+        'input',
+        'area',
+        'param',
+        'col',
+        'base',
+        ]
+
 def is_escaped(value, index):
     '''Returns True if the character at index is escaped with a \ '''
     cur = index - 1
@@ -302,6 +315,7 @@ class XmlTag(HamlElement):
 
         self.parse_name()
         self.parse_attrs()
+        self.parse_modifiers()
         self.parse_content()
 
     def add_attr(self, key, value):
@@ -407,6 +421,12 @@ class XmlTag(HamlElement):
 
                 self.data = self.data[1:]
 
+    def parse_modifiers(self):
+        if self.consume_regex("/"):
+            self.auto_close = True
+        else:
+            self.auto_close = self.name in auto_closing_tags
+
     def parse_content(self):
         if self.data.strip():
             self.content = Display(self.data[1:], self.opts, self.line)
@@ -441,13 +461,14 @@ class XmlTag(HamlElement):
             self.write_indent(indent, out)
 
             out.write("</%s>\n" % self.name)
+        elif self.content:
+            out.write(">")
+            self.content.execute(out)
+            out.write("</%s>\n" % self.name)
+        elif self.auto_close:
+            out.write(" />")
         else:
-            if self.content:
-                out.write(">")
-                self.content.execute(out)
-                out.write("</%s>\n" % self.name)
-            else:
-                out.write(" />")
+            out.write("></%s>" % self.name)
 
 
 class DirectDisplay(ChildlessElement):
