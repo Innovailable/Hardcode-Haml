@@ -2,8 +2,8 @@
 
 Compiling Haml markup/templates to program code.
 
-*Warning:* The code isn't ready for production use, yet. The TODO section is an
-imcomplete documentation of the missing parts.
+*Warning:* There are still some language features missing. The TODO section is
+an imcomplete documentation of the the parts I am aware of.
 
 ## Concept
 
