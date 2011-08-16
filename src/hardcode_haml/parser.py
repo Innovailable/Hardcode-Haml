@@ -242,8 +242,10 @@ class Declaration(ChildlessElement):
     '''Element which declares the parameters of the template'''
 
     def parse(self, data):
-        if data.strip():
-            self.paras = [para.strip() for para in data[1:].split(',')]
+        payload = data[1:]
+
+        if payload.strip():
+            self.paras = [para.strip() for para in payload.split(',')]
         else:
             self.paras = []
 
