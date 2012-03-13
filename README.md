@@ -68,6 +68,7 @@ There is an example in the [Wiki](https://github.com/thammi/Hardcode-Haml/wiki/E
 
 ### Tasks
 
+* correct scoping according to indent
 * implement most common syntax/language elements (see below)
 * ...
 * document implemented functionality and introduced syntax extensions of Haml
@@ -79,16 +80,13 @@ There is an example in the [Wiki](https://github.com/thammi/Hardcode-Haml/wiki/E
 
 #### Must have
 
-* direct HTML tags (status unknown)
-* tag parsing (check some behaviour)
-* entity escape (static and dynamic)
-* self closing tags
+* entity escape (static, dynamic?)
 * filters (infrastructure, some filters)
-* multiline
 
 ### May have
 
-* whitespace removal (&lt; and >)
+* boolean attributes (I really want this but it is quite hard to implement)
+* whitespace removal (&lt; and &rt;)
 * conditional comments /\[] (only needed to support IE afaik)
 * whitespace preservation
 * escaping/unescaping html in evaluations
@@ -96,7 +94,6 @@ There is an example in the [Wiki](https://github.com/thammi/Hardcode-Haml/wiki/E
 ### Won't implement (in the near future)
 
 * object reference \[] (too close to the target language)
-* boolean attributes?
 
 ## Links
 
