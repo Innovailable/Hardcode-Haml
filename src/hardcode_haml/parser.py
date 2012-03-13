@@ -140,11 +140,49 @@ class ChildlessElement(HamlElement):
     def add_child(self, child):
         self.fail("This element can't contain sub-blocks")
 
+class MultilineStack:
+    '''Helper class merging multiline lines'''
+
+    def __init__(self):
+        self.line = None
+        self.stack = None
+
+    def loaded(self):
+        '''Check whether a multiline was started'''
+        return self.line != None
+
+    def push(self, line, data):
+        '''Add a multiline line'''
+        if not self.loaded():
+            self.line = line
+            self.stack = [data.rstrip()]
+        else:
+            self.stack.append(data.strip())
+
+    def dump(self):
+        '''Return line number and data of the multiline and reset'''
+        ret = self.line, " ".join(self.stack)
+
+        self.line = None
+        self.stack = None
+
+        return ret
+
 def split_lines(inp):
     '''Generator yielding haml lines from a file'''
+    multi_stack = MultilineStack()
+
     for num, line in enumerate(inp, 1):
         if line.strip():
-            yield num, line
+            multi = re.match("^(.*)\s+\|\s*$", line)
+
+            if multi:
+                multi_stack.push(num, multi.group(1))
+            else:
+                if multi_stack.loaded():
+                    yield multi_stack.dump()
+
+                yield num, line
 
 class HamlFile(HamlElement):
     '''Root Haml element parsing the whole file'''
