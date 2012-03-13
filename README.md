@@ -36,6 +36,17 @@ We need a way to specify the name and type of the parameters given to the
 template. Additionally most languages need a way to execute code before the
 function declaration (e.g. to include headers).
 
+## State
+
+Hardcode Haml is used in at least one production environment (in which I am
+involved). The development is driven by this project as we find bugs and
+important missing features. I am confident that Hardcode Haml in its current
+state is stable and comprehensive enough to be useful in other projects.
+
+If you are missing a useful feature or find a bug please file an issue on
+[Github](https://github.com/thammi/Hardcode-Haml/issues). Also feel free to
+contact me there if you have any questions.
+
 ## Supported Languages
 
 Output can currently be generated in several languages
