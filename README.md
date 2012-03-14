@@ -100,7 +100,7 @@ Simply write:
 
 ... or ...
 
-    %input(type="radio"){checked ?=> foo}
+    %input(type="radio"){"checked" ?=> foo}
 
 This code evaluates to the following (X)HTML when `foo` is true:
 
