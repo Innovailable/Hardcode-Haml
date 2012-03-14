@@ -57,6 +57,9 @@ class PythonWriter:
             self.write_buf = []
             self.execute('out.write({data})'.format(data=repr(data)))
 
+    def conditional_block(self, expression):
+        self.block_exec("if {expr}".format(expr=expression))
+
     def block_exec(self, cmd):
         self.execute(cmd + ":")
         self.indent += 1

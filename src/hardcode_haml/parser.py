@@ -348,6 +348,7 @@ class XmlTag(HamlElement):
 
     def parse(self, data):
         self.attrs = {}
+        self.booleans = {}
         self.name = 'div'
         self.content = None
 
@@ -358,13 +359,16 @@ class XmlTag(HamlElement):
         self.parse_modifiers()
         self.parse_content()
 
-    def add_attr(self, key, value):
-        attrs = self.attrs
-
-        if key in attrs:
-            attrs[key].append(value)
+    def add_attr(self, key, value, boolean=False):
+        if boolean:
+            self.booleans[key] = value
         else:
-            attrs[key] = [value]
+            attrs = self.attrs
+
+            if key in attrs:
+                attrs[key].append(value)
+            else:
+                attrs[key] = [value]
 
     def consume_regex(self, regex):
         match = re.match(regex, self.data)
@@ -434,11 +438,13 @@ class XmlTag(HamlElement):
                 while self.data[0] != ')':
                     self.consume_regex("\s*")
                     key = '"%s"' % self.consume_regex("\w+")
-                    self.consume_regex("\s*=\s*")
+                    self.consume_regex("\s*")
+                    operator = self.consume_regex("\??=")
+                    self.consume_regex("\s*")
                     value = self.consume_value([' ', ')'])
 
                     if value and key:
-                        self.add_attr(key, value)
+                        self.add_attr(key, value, operator == "?=")
                     else:
                         self.fail("Failed to parse the attributes")
 
@@ -450,12 +456,14 @@ class XmlTag(HamlElement):
                 while self.data[0] != '}':
                     self.consume_regex("\s*")
                     key = self.consume_value(['='])
-                    self.consume_regex("\s*=>\s*")
+                    self.consume_regex("\s*")
+                    operator = self.consume_regex("\??=>")
+                    self.consume_regex("\s*")
                     value = self.consume_value([',', '}'])
                     self.consume_regex("\s*,?")
 
                     if value and key:
-                        self.add_attr(key, value)
+                        self.add_attr(key, value, operator == "?=>")
                     else:
                         self.fail("Failed to parse the attribute")
 
@@ -487,6 +495,16 @@ class XmlTag(HamlElement):
                 out.evaluate(value)
 
             out.write('"')
+
+        for key, value in self.booleans.iteritems():
+            # TODO: the key is currently evaluated twice
+            out.conditional_block(value)
+            out.write(' ')
+            out.evaluate(key)
+            out.write('="')
+            out.evaluate(key)
+            out.write('"')
+            out.close_block()
 
         if self.childs:
             out.write(">")

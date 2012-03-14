@@ -82,6 +82,9 @@ class CWriter:
             self.write_buf = []
             self.execute('fputs("{data}", out)'.format(data=data))
 
+    def conditional_block(self, expression):
+        self.block_exec("if({expr})".format(expr=expression))
+
     def block_exec(self, cmd):
         self.flush()
         self.out.write("\t" * self.indent + cmd + " {\n")
