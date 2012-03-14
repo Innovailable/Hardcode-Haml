@@ -65,11 +65,50 @@ won't be interchangable without replacing some code in your templates.
 
 Some syntax changes were neccessary to adopt Haml to the target languages.
 
-TODO
+### Declaration
 
-### Subtle changes
+As languages like C and C++ do not have tightly built-in dictionary types using
+those does not come natural in these languages. I therefore decided to use a
+more native approach to pass the data into the template: Function parameters. To
+declare those the Haml syntax has to be extended:
 
-TODO
+    ? int a, std::string b
+
+The `?` declares the parameters passed to the templates and starts the actual
+template. An implicit `?` at the start of the document is assumed if there is
+none explicit declaration.
+
+Introducing this operator has another advantage: It is possible to introduce
+code which will be placed outside the actual function processing the template.
+Simply write this code before the `?` declaration. The way this code behaves
+depends on the language you are using. In C/C++ this code will be added to the
+header which enables you to include files and declare types used in your
+template.
+
+### Boolean attributes
+
+Boolean attributes are implicit in ruby and detected at runtime. Hardcode Haml
+tries to do as much as possible in the parser and avoids complexity in the
+language modules. Another problem is that not all target languages are able to
+determine whether an expression evaluates to a boolean.  Hardcode Haml therefore
+extends the syntax with the '?=' and '?=&gt;' operators for attributes.
+
+Boolean attributes are useful for radiobuttons, checkboxes and select elements.
+Simply write:
+
+    %input(type="radio" checked?=foo)
+
+... or ...
+
+    %input(type="radio"){checked ?=> foo}
+
+This code evaluates to the following (X)HTML when `foo` is true:
+
+    <input type="radio" checked="checked">
+
+... and when `foo` is false to:
+
+    <input type="radio">
 
 ## Example
 
@@ -96,8 +135,7 @@ There is an example in the [Wiki](https://github.com/thammi/Hardcode-Haml/wiki/E
 
 ### May have
 
-* boolean attributes (I really want this but it is quite hard to implement)
-* whitespace removal (&lt; and &rt;)
+* whitespace removal (&lt; and &gt;)
 * conditional comments /\[] (only needed to support IE afaik)
 * whitespace preservation
 * escaping/unescaping html in evaluations
