@@ -26,7 +26,7 @@ from hardcode_haml.parser import HamlFile
 
 from hardcode_haml.lang import c, cpp, python
 
-def main(argv):
+def main():
     out_modules = {
             'cpp': cpp.ClassCppWriter,
             'classcpp': cpp.ClassCppWriter,
@@ -82,6 +82,5 @@ def main(argv):
             parser.execute(writer)
 
 if __name__ == '__main__':
-    import sys
-    main(sys.argv[1:])
+    main()
 
