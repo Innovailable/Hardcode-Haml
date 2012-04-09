@@ -27,18 +27,17 @@ from hardcode_haml.parser import HamlFile
 from hardcode_haml.lang import c, cpp, python
 
 def main():
-    out_modules = {
-            'cpp': cpp.ClassCppWriter,
-            'classcpp': cpp.ClassCppWriter,
-            'funcpp': cpp.FunCppWriter,
-            'c': c.CWriter,
-            'python': python.PythonWriter
-            }
+    out_modules = [
+            cpp.ClassCppWriter,
+            cpp.FunCppWriter,
+            c.CWriter,
+            python.PythonWriter,
+            ]
 
     optp = OptionParser(usage="usage: %prog [options] file [...]")
 
     optp.add_option("-o", "--output",
-            help="Determine Output module (language)",
+            help="Determine output module (language)",
             metavar="MODULE",
             default="cpp")
 
@@ -50,14 +49,35 @@ def main():
     optp.add_option("-r", "--readable",
             help="Make output more readable for debugging",
             action="store_true")
+
+    optp.add_option("-l", "--list",
+            help="List available output modules",
+            action="store_true")
     
     (options, args) = optp.parse_args()
+
+    if options.list:
+        print "Available language IDs:"
+
+        for lang in sorted(out_modules, key=lambda lang: lang.IDS[0]):
+            ids = ', '.join("'%s'" % i for i in lang.IDS)
+            print "- %s -> %s" % (ids, lang.NAME)
+
+        return 0
 
     if len(args) == 0:
         print "Please specify at least one file!"
         return 1
     else:
-        out_module = out_modules[options.output]
+        out_module = None
+
+        for cur in out_modules:
+            if options.output in cur.IDS:
+                out_module = cur
+                break
+        else:
+            print "Output module '%s' not found" % options.output
+            return 2
 
         opts = {
                 'indent': True,

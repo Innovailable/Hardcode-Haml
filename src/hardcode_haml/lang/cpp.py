@@ -109,6 +109,9 @@ class AbstractCppWriter:
 
 class FunCppWriter(AbstractCppWriter):
 
+    IDS = ['funcpp']
+    NAME = "C++ using functions"
+
     def declare(self, paras):
         para_str = ', '.join(['std::ostream &out'] + paras)
         decl = "void {name}({para})".format(name=self.name, para=para_str)
@@ -143,6 +146,9 @@ public:
 '''
 
 class ClassCppWriter(AbstractCppWriter):
+
+    IDS = ['cpp', 'classcpp']
+    NAME = "C++ using classes"
 
     def declare(self, paras):
         th_file = join(self.directory, "hamltemplate.h")

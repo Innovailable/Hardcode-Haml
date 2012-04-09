@@ -24,6 +24,9 @@ from hardcode_haml import primitives
 
 class CWriter:
 
+    IDS = ['c']
+    NAME = "C using functions"
+
     def __init__(self, name, directory):
         file_name = join(directory, name + ".c")
         self.out = open(file_name, 'w')

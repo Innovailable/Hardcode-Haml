@@ -22,6 +22,9 @@ from os.path import join
 
 class PythonWriter:
 
+    NAME = "Python using functions"
+    IDS = ['python']
+
     def __init__(self, name, directory):
         file_name = join(directory, name + ".py")
         self.out = open(file_name, 'w')
