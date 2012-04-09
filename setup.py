@@ -18,7 +18,7 @@ setup(
     description = ("Haml for hardcore coders (and C++/C/... projects)"),
     license = "AGPLv3",
     keywords = "haml template html web",
-    url = "http://www.chaossource.net/nymp/",
+    url = "http://www.chaossource.net/hardcode_haml/",
     packages=['hardcode_haml', 'hardcode_haml.lang'],
     package_dir={'': 'src'},
     long_description=read('README.md'),
