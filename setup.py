@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name = "Hardcode Haml",
-    version = "0.1.0",
+    version = "0.2.1",
     author = "Thammi",
     author_email = "thammi@chaossource.net",
     description = ("Haml for hardcore coders (and C++/C/... projects)"),
