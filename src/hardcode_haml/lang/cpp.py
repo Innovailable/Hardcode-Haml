@@ -137,6 +137,7 @@ template_header = '''\
 
 class HamlTemplate {
 public:
+    virtual ~HamlTemplate() {}
     virtual void run(std::ostream& out) = 0;
     friend std::ostream& operator<<(std::ostream& out, HamlTemplate& templ) { templ.run(out); return out; }
     friend std::ostream& operator<<(std::ostream& out, HamlTemplate* templ) { templ->run(out); return out; }
