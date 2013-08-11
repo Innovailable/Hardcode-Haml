@@ -11,8 +11,8 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "Hardcode Haml",
-    version = "0.2.1",
+    name = "hardcode-haml",
+    version = "0.2.2",
     author = "Thammi",
     author_email = "thammi@chaossource.net",
     description = ("Haml for hardcore coders (and C++/C/... projects)"),
