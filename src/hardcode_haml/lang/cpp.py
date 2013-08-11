@@ -30,6 +30,13 @@ class AbstractCppWriter:
         self.name = name
         self.directory = directory
 
+    def to_file(self, out_str):
+        if self.header:
+            self.header.write(out_str)
+        else:
+            self.out.write(out_str)
+
+
     def start(self):
         directory = self.directory
         name = self.name
@@ -66,10 +73,7 @@ class AbstractCppWriter:
         else:
             out_str = "\t" * self.indent + cmd + ";\n"
 
-        if self.header:
-            self.header.write(out_str)
-        else:
-            self.out.write(out_str)
+        self.to_file(out_str)
 
     def write(self, data):
         # escape!
@@ -95,17 +99,17 @@ class AbstractCppWriter:
 
     def block_exec(self, cmd):
         self.flush()
-        self.out.write("\t" * self.indent + cmd + " {\n")
+        self.to_file("\t" * self.indent + cmd + " {\n")
         self.indent += 1
 
     def close_block(self):
         self.flush()
         self.indent -= 1
-        self.out.write("\t" * self.indent + "}\n")
+        self.to_file("\t" * self.indent + "}\n")
 
     def comment(self, data):
         self.flush()
-        self.out.write("\t" * self.indent + "// " + data + "\n")
+        self.to_file("\t" * self.indent + "// " + data + "\n")
 
 class FunCppWriter(AbstractCppWriter):
 
