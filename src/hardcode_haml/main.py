@@ -57,16 +57,16 @@ def main():
     (options, args) = optp.parse_args()
 
     if options.list:
-        print "Available language IDs:"
+        print("Available language IDs:")
 
         for lang in sorted(out_modules, key=lambda lang: lang.IDS[0]):
             ids = ', '.join("'%s'" % i for i in lang.IDS)
-            print "- %s -> %s" % (ids, lang.NAME)
+            print("- %s -> %s" % (ids, lang.NAME))
 
         return 0
 
     if len(args) == 0:
-        print "Please specify at least one file!"
+        print("Please specify at least one file!")
         return 1
     else:
         out_module = None
@@ -76,7 +76,7 @@ def main():
                 out_module = cur
                 break
         else:
-            print "Output module '%s' not found" % options.output
+            print("Output module '%s' not found" % options.output)
             return 2
 
         opts = {
@@ -96,7 +96,7 @@ def main():
                 # backup solution
                 name = file_name.split('.')[0]
 
-            parser = HamlFile(file(in_file), opts)
+            parser = HamlFile(open(in_file, 'r'), opts)
             writer = out_module(name, options.directory)
 
             parser.execute(writer)

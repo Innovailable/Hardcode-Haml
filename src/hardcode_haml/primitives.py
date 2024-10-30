@@ -20,7 +20,7 @@
 
 import re
 
-from parser import find_unescaped
+from .parser import find_unescaped
 
 def number(value):
     if re.match("[0-9]+(?:\.[0-9]*)$", value):

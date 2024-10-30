@@ -242,7 +242,7 @@ class HamlFile(HamlElement):
 
             content = data.strip()
 
-            for pattern, pos_action in actions.items():
+            for pattern, pos_action in list(actions.items()):
                 if re.match(pattern, content):
                     action = pos_action
                     break
@@ -484,7 +484,7 @@ class XmlTag(HamlElement):
 
         out.write("<%s" % self.name)
 
-        for key, values in self.attrs.iteritems():
+        for key, values in self.attrs.items():
             out.write(' ')
             out.evaluate(key)
             out.write('="')
@@ -496,7 +496,7 @@ class XmlTag(HamlElement):
 
             out.write('"')
 
-        for key, value in self.booleans.iteritems():
+        for key, value in self.booleans.items():
             # TODO: the key is currently evaluated twice
             out.conditional_block(value)
             out.write(' ')

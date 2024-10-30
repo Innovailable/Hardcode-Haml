@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 from setuptools import setup
@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name = "hardcode-haml",
-    version = "0.2.3",
+    version = "0.3.0",
     author = "Thammi",
     author_email = "thammi@chaossource.net",
     description = ("Haml for hardcore coders (and C++/C/... projects)"),
